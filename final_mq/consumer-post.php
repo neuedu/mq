@@ -1,6 +1,6 @@
 <?php
 
-$type = "MQ-post";
+$type = "CMQ-post";
 require_once('moudle.php');
 require_once(dirname(__FILE__) . '/../../wp-load.php');
 $conf = ini_init();

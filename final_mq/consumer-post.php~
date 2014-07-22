@@ -1,6 +1,6 @@
 <?php
 
-$type = "CMQ-comment";
+$type = "MQ-post";
 require_once('moudle.php');
 require_once(dirname(__FILE__) . '/../../wp-load.php');
 $conf = ini_init();
@@ -67,13 +67,14 @@ function insertData($envelope, $queue) {
     $row_get = object_to_array($sync_get->data);
     $type = $sync_get->type;
     var_dump($type);
-
     $table = $sync_get->table;
     $data_k = array();
     $data_v = array();
-    $id = $row_get[comment_ID];
+    $id = $row_get[ID];
     var_dump($id);
-
+    if (!$row_get[ID]) {
+        $id = $row_get[comment_ID];
+    }
     $i = 0;
     foreach ($row_get as $key => $v) {
         if (is_numeric($key)) {
@@ -86,7 +87,7 @@ function insertData($envelope, $queue) {
     }
     if ($type == 'insert') {
 
-        $result = mysql_query("SELECT * FROM " . $table . " where " . $data_k[0] . " = " . $data_v[0]);
+        $result = mysql_query('SELECT * FROM ' . $table . ' where `' . $data_k[0] . '` = ' . $data_v[0]);
         $row = mysql_fetch_array($result);
         var_dump($row);
         if ($row) {
@@ -100,7 +101,7 @@ function insertData($envelope, $queue) {
             $update_data = $update_data . '`' . $data_k[$i] . '`="' . $data_v[$i] . '",';
         }
         $update_data = substr($update_data, 0, -1);
-        $mysql_update = 'update ' . $table . ' set ' . $update_data . ' where comment_ID = ' . $id . ';';
+        $mysql_update = 'update ' . $table . ' set ' . $update_data . ' where `' . $data_k[0] . '` = ' . $data_v[0] . ';';
         var_dump($mysql_update);
         mysql_query($mysql_update);
         echo '<br>';
@@ -120,16 +121,16 @@ function insertData($envelope, $queue) {
         $mysql_insert = 'insert into ' . $table . ' (' . $mysql_insert_key . ') values (' . $mysql_insert_val . ');';
         var_dump($mysql_insert);
         mysql_query($mysql_insert);
+    } else if ($type == 'delete') {
+        $mysql_delete = 'delete from ' . $table . ' where ID = "' . $id . '";';
+        var_dump($mysql_delete);
+        mysql_query($mysql_delete);
     } else if ($type == 'trash') {
-        $mysql_update = 'update ' . $table . ' set `comment_approved` = "trash" where comment_ID = "' . $id . '";';
+        $mysql_update = 'update ' . $table . ' set `post_status` = "trash" where id = "' . $id . '";';
         var_dump($mysql_update);
         mysql_query($mysql_update);
     } else if ($type == 'untrash') {
-        $mysql_update = 'update ' . $table . ' set `comment_approved` = "1" where comment_ID = "' . $id . '";';
-        var_dump($mysql_update);
-        mysql_query($mysql_update);
-    } else if ($type == 'delete') {
-        $mysql_update = 'delete from ' . $table . ' where `comment_ID` = "' . $id . '";';
+        $mysql_update = 'update ' . $table . ' set `post_status` = "publish" where id = "' . $id . '";';
         var_dump($mysql_update);
         mysql_query($mysql_update);
     }

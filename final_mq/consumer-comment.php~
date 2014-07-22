@@ -1,6 +1,6 @@
 <?php
 
-$type = "CMQ-comment";
+$type = "MQ-comment";
 require_once('moudle.php');
 require_once(dirname(__FILE__) . '/../../wp-load.php');
 $conf = ini_init();
