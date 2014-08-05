@@ -48,7 +48,8 @@ function push_MQ($message, $type) {
     $ex = new AMQPExchange($channel);
     $ex->setName($e_name);
     try {
-        echo "Send Message:" . $ex->publish($message, $k_route) . "\n";
+        //echo "Send Message:" 
+		$ex->publish($message, $k_route);
     } catch (Exception $e) {
         var_dump("there has en error occurred to sendmessage!!");
         mqexception($message);
