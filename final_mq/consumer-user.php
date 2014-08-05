@@ -95,7 +95,9 @@ function insertData($envelope, $queue) {
         $length = count($data_k);
         $update_data = '';
         for ($i = 0; $i < $length; $i++) {
-            $update_data = $update_data . '`' . $data_k[$i] . '`="' . $data_v[$i] . '",';
+            $data_key = mysql_real_escape_string($data_k[$i]);
+            $data_value = mysql_real_escape_string($data_v[$i]);
+            $update_data = $update_data . '`' . $data_key . '`="' . $data_value . '",';
         }
         $update_data = substr($update_data, 0, -1);
         $mysql_update = 'update ' . $table . ' set ' . $update_data . ' where `' . $data_k[0] . '` = ' . $data_v[0] . ';';
@@ -105,12 +107,14 @@ function insertData($envelope, $queue) {
     } else if ($type == 'insert') {
         $mysql_insert_key = '';
         foreach ($data_k as $v) {
+            $v = mysql_real_escape_string($v);
             $mysql_insert_key = $mysql_insert_key . '`' . $v . '`' . ',';
         }
         $mysql_insert_key = substr($mysql_insert_key, 0, -1);
 
         $mysql_insert_val = '';
         foreach ($data_v as $v) {
+            $v = mysql_real_escape_string($v);
             $mysql_insert_val = $mysql_insert_val . '"' . $v . '"' . ',';
         }
         $mysql_insert_val = substr($mysql_insert_val, 0, -1);
