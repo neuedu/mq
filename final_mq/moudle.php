@@ -14,7 +14,7 @@ function push_MQ($message, $type) {
             $con_type = 'MQ-comment';
             break;
         default:
-            var_dump("no config type!");
+            error_log("no config type!");
             mqexception($message);
             break;
     }

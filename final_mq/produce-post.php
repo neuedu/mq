@@ -16,17 +16,13 @@ require_once('moudle.php');
 
 function after_insert_post($para1 = "", $para2 = "", $para3 = "") {
 
-    $config = ini_init();
-
     mysql_init();
-
     try {
-
         $result = mysql_query("SELECT * FROM wp_posts where ID =" . $para1);
-
         $row = mysql_fetch_array($result);
-    } catch (Exception $e) {
-        echo "there has an error occurred to database during function " . __FUNCTION__;
+    } 
+    catch (Exception $e) {
+        error_log("there has an error occurred to database during function " . __FUNCTION__);
     }
     $sync = array(
         'type' => 'insert',
@@ -40,100 +36,87 @@ function after_insert_post($para1 = "", $para2 = "", $para3 = "") {
 
 function after_save_post($para1 = "", $para2 = "", $para3 = "") {
 
-    $config = ini_init();
-
     mysql_init();
     try {
         $result = mysql_query("SELECT * FROM wp_posts where ID =" . $para1);
-
         $row = mysql_fetch_array($result);
-    } catch (Exception $e) {
-        echo "there has an error occurred to database during function " . __FUNCTION__;
+    } 
+    catch (Exception $e) {
+        error_log("there has an error occurred to database during function " . __FUNCTION__);
     }
     $sync = array(
         'type' => 'insert',
         'table' => 'wp_posts',
         'data' => $row
     );
-
     $sync_json = json_encode($sync);
     push_MQ($sync_json, 'post');
 }
 
 function after_del_post($para1 = "", $para2 = "", $para3 = "") {
 
-    $config = ini_init();
-
     mysql_init();
     try {
         $result = mysql_query("SELECT * FROM wp_posts where ID =" . $para1);
-
         $row = mysql_fetch_array($result);
-    } catch (Exception $e) {
-        echo "there has an error occurred to database during function " . __FUNCTION__;
+    } 
+    catch (Exception $e) {
+        error_log("there has an error occurred to database during function " . __FUNCTION__);
     }
     $sync = array(
         'type' => 'delete',
         'table' => 'wp_posts',
         'data' => $row
     );
-
     $sync_json = json_encode($sync);
     push_MQ($sync_json, 'post');
 }
 
 function after_trash_post($para1 = "", $para2 = "", $para3 = "") {
 
-    $config = ini_init();
-
     mysql_init();
     try {
         $result = mysql_query("SELECT * FROM wp_posts where ID =" . $para1);
 
         $row = mysql_fetch_array($result);
-    } catch (Exception $e) {
-        echo "there has an error occurred to database during function " . __FUNCTION__;
+    } 
+    catch (Exception $e) {
+        error_log("there has an error occurred to database during function " . __FUNCTION__);
     }
     $sync = array(
         'type' => 'trash',
         'table' => 'wp_posts',
         'data' => $row
     );
-
     $sync_json = json_encode($sync);
     push_MQ($sync_json, 'post');
 }
 
 function after_publish_post($para1 = "", $para2 = "", $para3 = "") {
 
-    $config = ini_init();
-
     mysql_init();
     try {
         $result = mysql_query("SELECT * FROM wp_posts where ID =" . $para1);
-
         $row = mysql_fetch_array($result);
-    } catch (Exception $e) {
-        echo "there has an error occurred to database during function " . __FUNCTION__;
+    } 
+    catch (Exception $e) {
+        error_log("there has an error occurred to database during function " . __FUNCTION__);
     }
     $sync = array(
         'type' => 'untrash',
         'table' => 'wp_posts',
         'data' => $row
     );
-
     $sync_json = json_encode($sync);
     push_MQ($sync_json, 'post');
 }
 
 function after_post_meta($para1 = "", $para2 = "", $para3 = "") {
 
-    $config = ini_init();
-
     mysql_init();
     try {
-        $result = mysql_query("SELECT * FROM wp_postmeta where post_id = " . $para1);
-
+        $query = "SELECT * FROM wp_postmeta WHERE post_id = " . $para1 . " AND meta_key = '" . $para2 . "'";
+        $result = mysql_query($query);
         while ($row = mysql_fetch_array($result)) {
             $sync = array(
                 'type' => 'insert',
@@ -143,19 +126,18 @@ function after_post_meta($para1 = "", $para2 = "", $para3 = "") {
             $sync_json = json_encode($sync);
             push_MQ($sync_json, 'post');
         }
-    } catch (Exception $e) {
-        echo "there has an error occurred to database during function " . __FUNCTION__;
+    } 
+    catch (Exception $e) {
+        error_log("there has an error occurred to database during function " . __FUNCTION__);
     }
 }
 
 function after_update_post_meta($para1 = "", $para2 = "", $para3 = "") {
 
-    $config = ini_init();
-
     mysql_init();
     try {
-        $result = mysql_query("SELECT * FROM wp_postmeta where post_id = " . $para1);
-
+        $query = "SELECT * FROM wp_postmeta WHERE post_id = " . $para1 . " AND meta_key = '" . $para2 . "'";
+        $result = mysql_query($query);
         while ($row = mysql_fetch_array($result)) {
             $sync = array(
                 'type' => 'update',
@@ -165,23 +147,18 @@ function after_update_post_meta($para1 = "", $para2 = "", $para3 = "") {
             $sync_json = json_encode($sync);
             push_MQ($sync_json, 'post');
         }
-    } catch (Exception $e) {
-        echo "there has an error occurred to database during function " . __FUNCTION__;
+    } 
+    catch (Exception $e) {
+        error_log("there has an error occurred to database during function " . __FUNCTION__);
     }
 }
 
 add_action('wp_insert_post', after_insert_post);
-
 add_action('save_post', after_save_post);
-
 add_action('delete_post', after_del_post);
-
 add_action('wp_trash_post', after_trash_post);
-
 add_action('untrash_post', after_publish_post);
-
-add_action('add_post_meta', after_post_meta);
-
-add_action('update_post_meta', after_update_post_meta);
+add_action('add_post_meta', after_post_meta, 5, 2);
+add_action('update_post_meta', after_update_post_meta, 5, 2);
 
 
