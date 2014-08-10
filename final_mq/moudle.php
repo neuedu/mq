@@ -32,8 +32,9 @@ function push_MQ($message, $type) {
     $k_route = $config[$con_type]['k_route'];
     try {
         $conn = new AMQPConnection($conn_args);
-    } catch (Exception $e) {
-        var_dump("there has en error occurred to AMQPConnection!!");
+    } 
+    catch (Exception $e) {
+        error_log("there has en error occurred to AMQPConnection!!");
         mqexception($message);
     }
     if (!$conn->connect()) {
@@ -41,17 +42,19 @@ function push_MQ($message, $type) {
     }
     try {
         $channel = new AMQPChannel($conn);
-    } catch (Exception $e) {
-        var_dump("there has en error occurred to AMQPChannel!!");
+    } 
+    catch (Exception $e) {
+        error_log("there has en error occurred to AMQPChannel!!");
         mqexception($message);
     }
     $ex = new AMQPExchange($channel);
     $ex->setName($e_name);
+    
     try {
-        //echo "Send Message:" 
-		$ex->publish($message, $k_route);
-    } catch (Exception $e) {
-        var_dump("there has en error occurred to sendmessage!!");
+        $ex->publish($message, $k_route);
+    } 
+    catch (Exception $e) {
+        error_log("there has en error occurred to sendmessage!!");
         mqexception($message);
     }
     $conn->disconnect();
@@ -74,6 +77,6 @@ function ini_init() {
 function mqexception($message) {
     mysql_init();
     $mysql_insert = 'insert into wp_mqexception (`id`, `message`, `type`, `if_sync`) values ("", "' . base64_encode($message) . '", "' . $type . '", "0");';
-    var_dump($mysql_insert);
+    error_log($mysql_insert);
     mysql_query($mysql_insert);
 }

@@ -2,7 +2,7 @@
 
 $type = "CMQ-comment";
 require_once('moudle.php');
-require_once(dirname(__FILE__) . '/../../wp-load.php');
+require_once(dirname(dirname(dirname(__DIR__))) . '/wp-load.php');
 $conf = ini_init();
 $conn_args = array(
     'host' => $conf[$type]['host'],

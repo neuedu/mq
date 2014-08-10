@@ -5,7 +5,7 @@
  * @version 1.0
  */
 /*
-  Plugin Name: sync-comment1
+  Plugin Name: sync-comment
   Plugin URI: http://wordpress.org/plugins/sync_post/
   Description: sync between different zones through RabbitMQ
   Version: 1.0
